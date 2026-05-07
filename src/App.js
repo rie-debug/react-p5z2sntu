@@ -174,6 +174,17 @@ export default function App() {
   const [isError, setIsError] = useState(false);
   const errorTimeoutRef = useRef(null);
 
+  // === ブラウザのタブにアイコン（ファビコン）を設定 ===
+  useEffect(() => {
+    const link = document.querySelector("link[rel*='icon']") || document.createElement('link');
+    link.type = 'image/svg+xml';
+    link.rel = 'icon';
+    // キーボードの絵文字をアイコンとして設定
+    link.href = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">⌨️</text></svg>';
+    document.getElementsByTagName('head')[0].appendChild(link);
+    document.title = "Minimal Typing";
+  }, []);
+
   // === ローカルストレージを使用したデータ管理 ===
   const [myRecords, setMyRecords] = useState(() => {
     try {
@@ -188,7 +199,6 @@ export default function App() {
     return localStorage.getItem('minimalTypingName') || 'ゲストタイパー';
   });
 
-  // プロフィール更新 (Local Storage)
   const handleUpdateProfile = (e) => {
     e.preventDefault();
     const nameToSave = inputName.trim();
@@ -196,7 +206,6 @@ export default function App() {
     alert("表示名を保存しました！\n※このデータはお使いのブラウザ内でのみ保存されています。");
   };
 
-  // 記録を消去 (Local Storage)
   const clearRecords = () => {
     if (window.confirm("これまでのプレイ記録をすべて消去しますか？\n（この操作は取り消せません）")) {
       localStorage.removeItem('minimalTypingRecords');
@@ -205,7 +214,6 @@ export default function App() {
     }
   };
 
-  // プレイ結果の保存 (Local Storage)
   const saveResult = (wpmScore, accuracyScore, missCount, timeSec, mode) => {
     const now = Date.now();
     const newRecord = {
@@ -219,7 +227,6 @@ export default function App() {
       category: selectedCategory
     };
     
-    // 最新の記録を先頭に追加して保存
     const updatedRecords = [newRecord, ...myRecords];
     setMyRecords(updatedRecords);
     try {
@@ -229,10 +236,8 @@ export default function App() {
     }
   };
 
-  // ゲームの開始
   const startPlay = (categoryId) => {
     const category = CATEGORIES.find(c => c.id === categoryId);
-    // 毎回ランダムにシャッフルし、10問を抽出して出題
     const shuffledPhrases = [...category.phrases].sort(() => 0.5 - Math.random()).slice(0, 10);
     
     setPhrases(shuffledPhrases);
@@ -303,7 +308,6 @@ export default function App() {
         
         if (nextCharIndex === targets.length) {
           if (phraseIndex + 1 === phrases.length) {
-            // ゲーム終了とスコア計算
             const finalEnd = Date.now();
             setEndTime(finalEnd);
             
@@ -312,9 +316,7 @@ export default function App() {
             const finalWpm = Math.round((finalCorrect / 5) / (timeSec / 60));
             const finalAcc = ((finalCorrect / (finalCorrect + mistakeCount)) * 100).toFixed(1);
             
-            // ローカルストレージに保存
             saveResult(finalWpm, parseFloat(finalAcc), mistakeCount, timeSec, inputMode);
-            
             setGameState('result');
           } else {
             setPhraseIndex(prev => prev + 1);
@@ -339,7 +341,6 @@ export default function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [gameState, currentTab, hasStartedTyping, targets, charIndex]);
 
-  // 結果計算 (UI表示用)
   const timeSeconds = endTime && startTime ? (endTime - startTime) / 1000 : 0;
   const timeMinutes = timeSeconds / 60;
   const wpm = timeMinutes > 0 ? Math.round((correctCount / 5) / timeMinutes) : 0;
@@ -363,7 +364,6 @@ export default function App() {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col items-center p-4 sm:p-8 font-sans text-slate-800">
       
-      {/* ナビゲーションヘッダー */}
       <header className="w-full max-w-4xl flex flex-col sm:flex-row items-center justify-between border-b border-slate-200 pb-4 mb-8">
         <h1 
           className="text-xl font-light text-slate-700 tracking-[0.2em] uppercase flex items-center gap-2 cursor-pointer mb-4 sm:mb-0" 
@@ -388,10 +388,8 @@ export default function App() {
         </div>
       </header>
 
-      {/* メインコンテンツエリア */}
       <div className="w-full max-w-3xl flex-1 flex flex-col">
         
-        {/* === HOME TAB (ゲーム画面) === */}
         {currentTab === 'home' && (
           <>
             {gameState === 'start' && (
@@ -545,7 +543,6 @@ export default function App() {
           </>
         )}
 
-        {/* === PROFILE TAB (マイページ画面) === */}
         {currentTab === 'profile' && (
           <div className="bg-white p-8 rounded-xl shadow-sm border border-slate-200 animate-fade-in w-full max-w-2xl mx-auto">
             <h2 className="text-2xl font-light text-slate-700 mb-8 tracking-[0.1em] flex items-center gap-3">
@@ -553,7 +550,6 @@ export default function App() {
               マイページ
             </h2>
 
-            {/* プロフィール設定 */}
             <div className="mb-10 bg-slate-50 p-6 rounded-lg border border-slate-200">
               <h3 className="text-sm font-bold text-slate-600 mb-4 flex items-center gap-2">
                 <Save className="w-4 h-4" /> ユーザー名の設定
@@ -574,7 +570,6 @@ export default function App() {
               <p className="text-xs text-slate-400 mt-2">※ この名前と記録は、今お使いのブラウザ（ローカル）にのみ保存されます。</p>
             </div>
 
-            {/* 過去の記録 */}
             <div>
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-sm font-bold text-slate-600 flex items-center gap-2">
@@ -633,7 +628,7 @@ export default function App() {
 
       <footer className="w-full text-center py-6 mt-auto">
         <p className="text-xs text-slate-400 font-medium tracking-wider">
-          &copy; {new Date().getFullYear()} Minimal Typing. All rights reserved.
+          &copy; {new Date().getFullYear()} ch_procreate_ipad. All rights reserved.
         </p>
       </footer>
       
@@ -649,3 +644,4 @@ export default function App() {
     </div>
   );
 }
+
