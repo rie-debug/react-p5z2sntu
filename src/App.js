@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useEffect, useRef } from 'react';
 import { Plane, Coffee, Utensils, MessageSquare, RotateCcw, Home, AlertCircle, Keyboard, User, Save, History, Trash2 } from 'lucide-react';
 
@@ -11,14 +12,14 @@ const CATEGORIES = [
       { ja: "パスポートをお願いします", en: "Passport, please.", romaji: "pasupo-to o onegaishimasu.", reading: "ぱすぽーとをおねがいします。" },
       { ja: "手荷物受取所はどこですか？", en: "Where is the baggage claim?", romaji: "tenimotsu uketorijo wa doko desuka?", reading: "てにもつうけとりじょはどこですか？" },
       { ja: "申告するものは何もありません", en: "I have nothing to declare.", romaji: "shinkokusuru mono wa nanimo arimasen.", reading: "しんこくするものはなにもありません。" },
-      { ja: "搭乗券をお願いします", en: "Boarding pass, please.", romaji: "toujouken o onegaishimasu.", reading: "とうじょうけんをおねがいします。" },
+      { ja: "搭乗券をお願いします", en: "Boarding pass, please.", romaji: "toujouken o onegaishimasu.", reading: "とうjouけんをおねがいします。" },
       { ja: "搭乗口の番号は何番ですか？", en: "What is the gate number?", romaji: "toujouguchi no bangou wa nanban desuka?", reading: "とうじょうぐちのばんごうはなんばんですか？" },
       { ja: "これが私のパスポートです", en: "Here is my passport.", romaji: "kore ga watashi no pasupo-to desu.", reading: "これがわたしのぱすぽーとです。" },
       { ja: "この便は遅れていますか？", en: "Is this flight delayed?", romaji: "kono bin wa okurete imasuka?", reading: "このびんはおくれていますか？" },
       { ja: "タクシー乗り場はどこですか？", en: "Where can I get a taxi?", romaji: "takushi- noriba wa doko desuka?", reading: "たくしーのりばはどこですか？" },
       { ja: "観光目的で来ました", en: "I am here for sightseeing.", romaji: "kankoumokuteki de kimashita.", reading: "かんこうもくてきできました。" },
       { ja: "どのくらい滞在しますか？", en: "How long will you stay?", romaji: "donokurai taizai shimasuka?", reading: "どのくらいたいざいしますか？" },
-      { ja: "フライトは何時ですか？", en: "What time is the flight?", romaji: "furaito wa nanji desuka?", reading: "ふらいとはなんじですか？" },
+      { ja: "フライトは何時ですか？", en: "What time is the flight?", romaji: "furaito wa nanji desuka?", reading: "ふらいとはなんjiですか？" },
       { ja: "通路側の席をお願いします", en: "An aisle seat, please.", romaji: "tsuurogawa no seki o onegaishimasu.", reading: "つうろがわのせきをおねがいします。" },
       { ja: "窓側の席をお願いします", en: "A window seat, please.", romaji: "madogawa no seki o onegaishimasu.", reading: "まどがわのせきをおねがいします。" },
       { ja: "荷物はいくつありますか？", en: "How many bags do you have?", romaji: "nimotsu wa ikutsu arimasuka?", reading: "にもつはいくつありますか？" },
@@ -93,7 +94,6 @@ const CATEGORIES = [
   }
 ];
 
-// === かな入力用のJISキーボードマッピング ===
 const KANA_MAP = {
   'あ':{key:'3'}, 'い':{key:'e'}, 'う':{key:'4'}, 'え':{key:'5'}, 'お':{key:'6'},
   'か':{key:'t'}, 'き':{key:'g'}, 'く':{key:'h'}, 'け':{key:':'}, 'こ':{key:'b'},
@@ -155,7 +155,7 @@ const HandGuide = ({ targetFingerId }) => {
 };
 
 export default function App() {
-  const [currentTab, setCurrentTab] = useState('home'); // 'home' or 'profile'
+  const [currentTab, setCurrentTab] = useState('home');
   const [gameState, setGameState] = useState('start');
   const [inputMode, setInputMode] = useState('english');
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -174,25 +174,20 @@ export default function App() {
   const [isError, setIsError] = useState(false);
   const errorTimeoutRef = useRef(null);
 
-  // === ブラウザのタブにアイコン（ファビコン）を設定 ===
   useEffect(() => {
     const link = document.querySelector("link[rel*='icon']") || document.createElement('link');
     link.type = 'image/svg+xml';
     link.rel = 'icon';
-    // キーボードの絵文字をアイコンとして設定
     link.href = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">⌨️</text></svg>';
     document.getElementsByTagName('head')[0].appendChild(link);
     document.title = "Minimal Typing";
   }, []);
 
-  // === ローカルストレージを使用したデータ管理 ===
   const [myRecords, setMyRecords] = useState(() => {
     try {
       const saved = localStorage.getItem('minimalTypingRecords');
       return saved ? JSON.parse(saved) : [];
-    } catch (e) {
-      return [];
-    }
+    } catch (e) { return []; }
   });
 
   const [inputName, setInputName] = useState(() => {
@@ -201,46 +196,37 @@ export default function App() {
 
   const handleUpdateProfile = (e) => {
     e.preventDefault();
-    const nameToSave = inputName.trim();
-    localStorage.setItem('minimalTypingName', nameToSave);
-    alert("表示名を保存しました！\n※このデータはお使いのブラウザ内でのみ保存されています。");
+    localStorage.setItem('minimalTypingName', inputName.trim());
+    alert("保存しました！");
   };
 
   const clearRecords = () => {
-    if (window.confirm("これまでのプレイ記録をすべて消去しますか？\n（この操作は取り消せません）")) {
+    if (window.confirm("全記録を消去しますか？")) {
       localStorage.removeItem('minimalTypingRecords');
       setMyRecords([]);
-      alert("記録を消去しました。");
     }
   };
 
   const saveResult = (wpmScore, accuracyScore, missCount, timeSec, mode) => {
-    const now = Date.now();
     const newRecord = {
-      id: crypto.randomUUID ? crypto.randomUUID() : now.toString(),
+      id: Date.now().toString(),
       wpm: wpmScore,
       accuracy: accuracyScore,
       misses: missCount,
       time: timeSec,
       mode: mode,
-      date: now,
+      date: Date.now(),
       category: selectedCategory
     };
-    
-    const updatedRecords = [newRecord, ...myRecords];
-    setMyRecords(updatedRecords);
-    try {
-      localStorage.setItem('minimalTypingRecords', JSON.stringify(updatedRecords));
-    } catch (e) {
-      console.error("Local storage error:", e);
-    }
+    const updated = [newRecord, ...myRecords];
+    setMyRecords(updated);
+    localStorage.setItem('minimalTypingRecords', JSON.stringify(updated));
   };
 
   const startPlay = (categoryId) => {
     const category = CATEGORIES.find(c => c.id === categoryId);
-    const shuffledPhrases = [...category.phrases].sort(() => 0.5 - Math.random()).slice(0, 10);
-    
-    setPhrases(shuffledPhrases);
+    const shuffled = [...category.phrases].sort(() => 0.5 - Math.random()).slice(0, 10);
+    setPhrases(shuffled);
     setSelectedCategory(categoryId);
     setPhraseIndex(0);
     setCharIndex(0);
@@ -249,28 +235,23 @@ export default function App() {
     setMistakeCount(0);
     setMissedFingers({});
     setGameState('playing');
-    setCurrentTab('home');
   };
 
   useEffect(() => {
     if (gameState !== 'playing' || phrases.length === 0) return;
     const phrase = phrases[phraseIndex];
     let newTargets = [];
-
     if (inputMode === 'english') {
       newTargets = phrase.en.split('').map(c => ({ key: c, displayChar: c, requiresShift: /[A-Z!@#$%^&*()_+{}|:"<>?]/.test(c) }));
     } else if (inputMode === 'romaji') {
       newTargets = phrase.romaji.split('').map(c => ({ key: c, displayChar: c, requiresShift: /[A-Z!@#$%^&*()_+{}|:"<>?]/.test(c) }));
     } else if (inputMode === 'kana') {
-      for (let i = 0; i < phrase.reading.length; i++) {
-        const char = phrase.reading[i];
+      for (let char of phrase.reading) {
         if (DAKUTEN_MAP[char]) {
-          const base = DAKUTEN_MAP[char];
-          newTargets.push({ ...KANA_MAP[base], displayChar: base });
+          newTargets.push({ ...KANA_MAP[DAKUTEN_MAP[char]], displayChar: DAKUTEN_MAP[char] });
           newTargets.push({ key: '@', displayChar: '゛', requiresShift: false });
         } else if (HANDAKUTEN_MAP[char]) {
-          const base = HANDAKUTEN_MAP[char];
-          newTargets.push({ ...KANA_MAP[base], displayChar: base });
+          newTargets.push({ ...KANA_MAP[HANDAKUTEN_MAP[char]], displayChar: HANDAKUTEN_MAP[char] });
           newTargets.push({ key: '[', displayChar: '゜', requiresShift: false });
         } else if (KANA_MAP[char]) {
           newTargets.push({ ...KANA_MAP[char], displayChar: char });
@@ -284,259 +265,131 @@ export default function App() {
 
   useEffect(() => {
     if (gameState !== 'playing' || currentTab !== 'home') return;
-
     const handleKeyDown = (e) => {
       if (e.key.length !== 1) return;
       e.preventDefault();
-
-      if (!hasStartedTyping) {
-        setHasStartedTyping(true);
-        setStartTime(Date.now());
-      }
-
+      if (!hasStartedTyping) { setHasStartedTyping(true); setStartTime(Date.now()); }
       const target = targets[charIndex];
       if (!target) return;
-
-      const isMatch = e.key === target.key;
-
-      if (isMatch) {
+      if (e.key === target.key) {
         setIsError(false);
-        if (errorTimeoutRef.current) clearTimeout(errorTimeoutRef.current);
-        
-        setCorrectCount(prev => prev + 1);
-        const nextCharIndex = charIndex + 1;
-        
-        if (nextCharIndex === targets.length) {
+        setCorrectCount(c => c + 1);
+        if (charIndex + 1 === targets.length) {
           if (phraseIndex + 1 === phrases.length) {
-            const finalEnd = Date.now();
-            setEndTime(finalEnd);
-            
-            const timeSec = (finalEnd - startTime) / 1000;
-            const finalCorrect = correctCount + 1;
-            const finalWpm = Math.round((finalCorrect / 5) / (timeSec / 60));
-            const finalAcc = ((finalCorrect / (finalCorrect + mistakeCount)) * 100).toFixed(1);
-            
-            saveResult(finalWpm, parseFloat(finalAcc), mistakeCount, timeSec, inputMode);
+            const end = Date.now();
+            setEndTime(end);
+            const time = (end - startTime) / 1000;
+            const wpm = Math.round(((correctCount+1) / 5) / (time / 60));
+            const acc = (((correctCount+1) / (correctCount+1 + mistakeCount)) * 100).toFixed(1);
+            saveResult(wpm, parseFloat(acc), mistakeCount, time, inputMode);
             setGameState('result');
-          } else {
-            setPhraseIndex(prev => prev + 1);
-            setCharIndex(0);
-          }
-        } else {
-          setCharIndex(nextCharIndex);
-        }
+          } else { setPhraseIndex(p => p + 1); setCharIndex(0); }
+        } else { setCharIndex(idx => idx + 1); }
       } else {
-        setMistakeCount(prev => prev + 1);
+        setMistakeCount(m => m + 1);
         const finger = getFingerForChar(target.key);
-        if (finger) {
-          setMissedFingers(prev => ({ ...prev, [finger.id]: (prev[finger.id] || 0) + 1 }));
-        }
+        if (finger) setMissedFingers(prev => ({ ...prev, [finger.id]: (prev[finger.id] || 0) + 1 }));
         setIsError(true);
         if (errorTimeoutRef.current) clearTimeout(errorTimeoutRef.current);
         errorTimeoutRef.current = setTimeout(() => setIsError(false), 150);
       }
     };
-
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [gameState, currentTab, hasStartedTyping, targets, charIndex]);
 
-  const timeSeconds = endTime && startTime ? (endTime - startTime) / 1000 : 0;
-  const timeMinutes = timeSeconds / 60;
-  const wpm = timeMinutes > 0 ? Math.round((correctCount / 5) / timeMinutes) : 0;
-  const accuracy = correctCount + mistakeCount > 0 
-    ? ((correctCount / (correctCount + mistakeCount)) * 100).toFixed(1) : 0;
-
+  const timeSeconds = (endTime - startTime) / 1000;
+  const wpm = Math.round((correctCount / 5) / (timeSeconds / 60)) || 0;
+  const accuracy = correctCount + mistakeCount > 0 ? ((correctCount / (correctCount + mistakeCount)) * 100).toFixed(1) : 0;
   const getWeakFinger = () => {
-    if (Object.keys(missedFingers).length === 0) return null;
-    let maxMisses = 0;
-    let weakFingerId = null;
-    for (const [id, count] of Object.entries(missedFingers)) {
-      if (count > maxMisses) { maxMisses = count; weakFingerId = id; }
-    }
-    return { id: weakFingerId, count: maxMisses };
+    const keys = Object.keys(missedFingers);
+    if (keys.length === 0) return null;
+    const weakId = keys.reduce((a, b) => missedFingers[a] > missedFingers[b] ? a : b);
+    return { id: weakId, count: missedFingers[weakId] };
   };
-
-  const weakFingerData = getWeakFinger();
-  const currentTarget = targets[charIndex];
-  const targetFinger = currentTarget ? getFingerForChar(currentTarget.key) : null;
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col items-center p-4 sm:p-8 font-sans text-slate-800">
-      
       <header className="w-full max-w-4xl flex flex-col sm:flex-row items-center justify-between border-b border-slate-200 pb-4 mb-8">
-        <h1 
-          className="text-xl font-light text-slate-700 tracking-[0.2em] uppercase flex items-center gap-2 cursor-pointer mb-4 sm:mb-0" 
-          onClick={() => { setCurrentTab('home'); setGameState('start'); }}
-        >
-          <Keyboard className="w-6 h-6 text-sky-500" />
-          Minimal Typing
+        <h1 className="text-xl font-light text-slate-700 tracking-[0.2em] uppercase flex items-center gap-2 cursor-pointer mb-4 sm:mb-0" onClick={() => { setGameState('start'); setCurrentTab('home'); }}>
+          <Keyboard className="w-6 h-6 text-sky-500" /> Minimal Typing
         </h1>
-        <div className="flex gap-2 sm:gap-4 bg-slate-100 p-1.5 rounded-lg border border-slate-200">
-          <button 
-            onClick={() => { setCurrentTab('home'); setGameState('start'); }} 
-            className={`px-4 py-2 text-sm font-medium rounded-md transition-all flex items-center gap-2 ${currentTab==='home' ? 'bg-white shadow-sm text-sky-600' : 'text-slate-500 hover:text-slate-700'}`}
-          >
-            <Home className="w-4 h-4" /> プレイ
-          </button>
-          <button 
-            onClick={() => setCurrentTab('profile')} 
-            className={`px-4 py-2 text-sm font-medium rounded-md transition-all flex items-center gap-2 ${currentTab==='profile' ? 'bg-white shadow-sm text-sky-600' : 'text-slate-500 hover:text-slate-700'}`}
-          >
-            <User className="w-4 h-4" /> マイページ
-          </button>
+        <div className="flex gap-2 bg-slate-100 p-1.5 rounded-lg border border-slate-200">
+          <button onClick={() => { setGameState('start'); setCurrentTab('home'); }} className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${currentTab==='home' ? 'bg-white shadow-sm text-sky-600' : 'text-slate-500'}`}><Home className="w-4 h-4 inline mr-1"/>プレイ</button>
+          <button onClick={() => setCurrentTab('profile')} className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${currentTab==='profile' ? 'bg-white shadow-sm text-sky-600' : 'text-slate-500'}`}><User className="w-4 h-4 inline mr-1"/>マイページ</button>
         </div>
       </header>
 
-      <div className="w-full max-w-3xl flex-1 flex flex-col">
-        
+      <div className="w-full max-w-3xl flex-1">
         {currentTab === 'home' && (
           <>
             {gameState === 'start' && (
-              <div className="animate-fade-in flex flex-col items-center">
-                <div className="flex gap-2 justify-center mb-8 bg-slate-200/60 p-1.5 rounded-xl w-max shadow-inner">
+              <div className="animate-fade-in">
+                <div className="flex gap-3 justify-center mb-8 bg-slate-200/50 p-2 rounded-xl w-max mx-auto border border-slate-200">
                   {['english', 'romaji', 'kana'].map(mode => (
-                    <button
-                      key={mode}
-                      onClick={() => setInputMode(mode)}
-                      className={`px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
-                        inputMode === mode 
-                          ? 'bg-white shadow-sm text-sky-600' 
-                          : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/50'
-                      }`}
-                    >
+                    <button key={mode} onClick={() => setInputMode(mode)} className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${inputMode === mode ? 'bg-sky-600 text-white shadow-md' : 'bg-white text-slate-500 hover:bg-slate-50'}`}>
                       {mode === 'english' ? 'English (英字)' : mode === 'romaji' ? 'ローマ字' : 'かな入力'}
                     </button>
                   ))}
                 </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {CATEGORIES.map(cat => {
                     const Icon = cat.icon;
                     return (
-                      <button 
-                        key={cat.id}
-                        onClick={() => startPlay(cat.id)} 
-                        className="p-8 bg-white border border-slate-200 hover:border-sky-300 rounded-xl shadow-sm hover:shadow flex flex-col items-center gap-4 transition-all group"
-                      >
-                        <Icon className="w-8 h-8 text-slate-300 group-hover:text-sky-500 transition-colors" />
-                        <span className="text-slate-600 font-medium tracking-wide">{cat.name}</span>
+                      <button key={cat.id} onClick={() => startPlay(cat.id)} className="p-8 bg-white border-2 border-slate-100 hover:border-sky-500 hover:bg-sky-600 hover:text-white rounded-xl shadow-sm hover:shadow-lg transition-all group flex flex-col items-center gap-4">
+                        <Icon className="w-8 h-8 text-sky-500 group-hover:text-white transition-colors" />
+                        <span className="font-bold tracking-wide">{cat.name}</span>
                       </button>
                     );
                   })}
                 </div>
-                
-                <div className="mt-8 text-center text-xs text-slate-400 bg-slate-100 py-3 px-6 rounded-lg border border-slate-200">
-                  ※ご使用の前に、キーボードを<strong className="font-semibold text-slate-500">「半角英数（直接入力）」</strong>モードにしてください。
-                </div>
+                <div className="mt-8 text-center text-xs text-slate-400 bg-slate-100 py-3 rounded-lg border border-slate-200">※キーボードを「半角英数（直接入力）」にしてから始めてください。</div>
               </div>
             )}
 
-            {gameState === 'playing' && targets.length > 0 && (
+            {gameState === 'playing' && (
               <div className="bg-white p-6 sm:p-10 rounded-xl shadow-sm border border-slate-200 flex flex-col items-center justify-center min-h-[420px] relative overflow-hidden">
-                <div className="absolute top-0 left-0 h-1 bg-sky-500 transition-all duration-300" style={{ width: `${(phraseIndex / phrases.length) * 100}%` }} />
-
-                <div className="text-xs text-slate-400 mb-6 font-medium tracking-widest uppercase">
-                  {CATEGORIES.find(c => c.id === selectedCategory)?.name} - {phraseIndex + 1} / {phrases.length}
-                </div>
-                
-                <div className="text-base text-slate-500 mb-8 font-medium text-center">
-                  {phrases[phraseIndex].ja}
-                </div>
-                
-                <div className="flex flex-wrap justify-center items-end gap-y-6 gap-x-[2px] mb-8 select-none w-full max-w-2xl">
-                  {targets.map((t, idx) => {
-                    const isCompleted = idx < charIndex;
-                    const isCurrent = idx === charIndex;
-                    return (
-                      <div key={idx} className="flex flex-col items-center">
-                        {inputMode === 'kana' && (
-                          <span className={`text-[12px] h-5 font-sans font-bold ${isCompleted ? 'text-slate-300' : 'text-slate-500'}`}>
-                            {t.displayChar !== ' ' ? t.displayChar : ''}
-                          </span>
-                        )}
-                        <span className={`
-                          text-2xl sm:text-3xl font-mono tracking-wider px-[2px] rounded-sm transition-colors duration-150 relative
-                          ${isCompleted ? 'text-slate-300' : isCurrent ? (isError ? 'bg-rose-100 text-rose-600' : 'bg-sky-100 text-sky-800') : 'text-slate-700'}
-                        `}>
-                          {t.key === ' ' ? '\u00A0' : (inputMode === 'kana' ? t.key.toUpperCase() : t.displayChar)}
-                          {isCurrent && <span className="absolute bottom-0 left-0 w-full h-[3px] bg-sky-500 animate-pulse" />}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                <div className={`mt-2 flex flex-col items-center transition-opacity duration-300 ${hasStartedTyping ? 'opacity-100' : 'opacity-0'}`}>
-                  <HandGuide targetFingerId={targetFinger?.id} />
-                  <div className="mt-4 flex items-center justify-center gap-2 text-sm min-h-[24px]">
-                    {currentTarget?.requiresShift && (
-                      <span className="text-xs bg-amber-100 px-3 py-1 rounded text-amber-700 border border-amber-200 font-bold tracking-wider">
-                        + Shift キー
+                <div className="absolute top-0 left-0 h-1 bg-sky-500 transition-all" style={{ width: `${(phraseIndex / phrases.length) * 100}%` }} />
+                <div className="text-xs text-slate-400 mb-6 font-bold tracking-widest uppercase">{CATEGORIES.find(c => c.id === selectedCategory)?.name} - {phraseIndex + 1} / 10</div>
+                <div className="text-xl text-slate-700 mb-8 font-medium text-center">{phrases[phraseIndex].ja}</div>
+                <div className="flex flex-wrap justify-center items-end gap-y-6 gap-x-[2px] mb-8 select-none w-full">
+                  {targets.map((t, idx) => (
+                    <div key={idx} className="flex flex-col items-center">
+                      {inputMode === 'kana' && <span className={`text-[12px] h-5 font-bold ${idx < charIndex ? 'text-slate-200' : 'text-slate-400'}`}>{t.displayChar !== ' ' ? t.displayChar : ''}</span>}
+                      <span className={`text-3xl font-mono px-[2px] rounded transition-colors relative ${idx < charIndex ? 'text-slate-200' : idx === charIndex ? (isError ? 'bg-rose-100 text-rose-600' : 'bg-sky-100 text-sky-800') : 'text-slate-700'}`}>
+                        {t.key === ' ' ? '␣' : (inputMode === 'kana' ? t.key.toUpperCase() : t.displayChar)}
+                        {idx === charIndex && <span className="absolute bottom-0 left-0 w-full h-[3px] bg-sky-500 animate-pulse" />}
                       </span>
-                    )}
+                    </div>
+                  ))}
+                </div>
+                <div className={`mt-2 transition-opacity ${hasStartedTyping ? 'opacity-100' : 'opacity-0'}`}>
+                  <HandGuide targetFingerId={getFingerForChar(targets[charIndex]?.key)?.id} />
+                  <div className="mt-4 text-center min-h-[24px]">
+                    {targets[charIndex]?.requiresShift && <span className="text-xs bg-amber-100 px-3 py-1 rounded text-amber-700 border border-amber-200 font-bold">+ Shift キー</span>}
+                    {targets[charIndex]?.key === ' ' && <span className="text-xs text-sky-600 font-bold">スペースキーを叩いてください</span>}
                   </div>
                 </div>
-                
-                {!hasStartedTyping && (
-                  <div className="absolute bottom-8 text-xs text-sky-500 font-bold animate-pulse tracking-widest">
-                    TYPE TO START
-                  </div>
-                )}
+                {!hasStartedTyping && <div className="absolute bottom-8 text-xs text-sky-500 font-bold animate-pulse tracking-widest">TYPE TO START</div>}
               </div>
             )}
 
             {gameState === 'result' && (
               <div className="bg-white p-10 rounded-xl shadow-sm border border-slate-200 flex flex-col items-center animate-fade-in">
                 <h2 className="text-xl font-light text-slate-700 mb-2 tracking-[0.1em] uppercase">Result</h2>
-                <p className="text-xs text-sky-500 font-medium mb-10">記録はブラウザに保存されました</p>
-                
-                <div className="grid grid-cols-2 gap-x-12 gap-y-8 mb-12 w-full max-w-sm">
-                  <div className="text-center">
-                    <div className="text-4xl font-mono text-slate-800 mb-1">{wpm}</div>
-                    <div className="text-xs text-slate-400 uppercase tracking-widest">WPM</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-4xl font-mono text-slate-800 mb-1">{accuracy}<span className="text-xl">%</span></div>
-                    <div className="text-xs text-slate-400 uppercase tracking-widest">Accuracy</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-mono text-slate-600 mb-1">{timeSeconds.toFixed(1)}<span className="text-base">s</span></div>
-                    <div className="text-xs text-slate-400 uppercase tracking-widest">Time</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-mono text-slate-600 mb-1">{mistakeCount}</div>
-                    <div className="text-xs text-slate-400 uppercase tracking-widest">Misses</div>
-                  </div>
+                <div className="grid grid-cols-2 gap-x-12 gap-y-8 mb-12 w-full max-w-sm mt-8">
+                  <div className="text-center"><div className="text-4xl font-mono text-slate-800 mb-1">{wpm}</div><div className="text-xs text-slate-400 uppercase">WPM</div></div>
+                  <div className="text-center"><div className="text-4xl font-mono text-slate-800 mb-1">{accuracy}%</div><div className="text-xs text-slate-400 uppercase">Accuracy</div></div>
                 </div>
-
-                {weakFingerData && weakFingerData.count > 0 && (
+                {getWeakFinger() && (
                   <div className="mb-10 w-full max-w-sm bg-amber-50 border border-amber-100 rounded-lg p-4 flex items-start gap-3">
                     <AlertCircle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
-                    <div>
-                      <h3 className="text-sm font-medium text-amber-800 mb-1">苦手な指の分析</h3>
-                      <p className="text-sm text-amber-700/80">
-                        今回は <strong>{weakFingerData.id}</strong> でのミスが一番多かったようです（{weakFingerData.count}回）。少し意識して練習してみましょう！
-                      </p>
-                    </div>
+                    <p className="text-sm text-amber-700">今回は <strong>{getWeakFinger().id}</strong> のミスが多めでした（{getWeakFinger().count}回）。意識してみましょう！</p>
                   </div>
                 )}
-
                 <div className="flex gap-4 w-full max-w-sm">
-                  <button 
-                    onClick={() => startPlay(selectedCategory)} 
-                    className="flex-1 py-4 bg-sky-600 text-white font-medium rounded-lg hover:bg-sky-700 flex justify-center items-center gap-2 transition-colors text-sm tracking-wide"
-                  >
-                    <RotateCcw className="w-4 h-4" />
-                    Retry
-                  </button>
-                  <button 
-                    onClick={() => { setCurrentTab('home'); setGameState('start'); }} 
-                    className="flex-1 py-4 bg-white border border-slate-200 text-slate-600 font-medium rounded-lg hover:bg-slate-50 flex justify-center items-center gap-2 transition-colors text-sm tracking-wide"
-                  >
-                    <Home className="w-4 h-4" />
-                    Home
-                  </button>
+                  <button onClick={() => startPlay(selectedCategory)} className="flex-1 py-4 bg-sky-600 text-white font-bold rounded-lg hover:bg-sky-700 transition-colors flex justify-center items-center gap-2"><RotateCcw className="w-4 h-4"/>Retry</button>
+                  <button onClick={() => setGameState('start')} className="flex-1 py-4 bg-white border border-slate-200 text-slate-600 font-bold rounded-lg hover:bg-slate-50 transition-colors flex justify-center items-center gap-2"><Home className="w-4 h-4"/>Home</button>
                 </div>
               </div>
             )}
@@ -544,86 +397,29 @@ export default function App() {
         )}
 
         {currentTab === 'profile' && (
-          <div className="bg-white p-8 rounded-xl shadow-sm border border-slate-200 animate-fade-in w-full max-w-2xl mx-auto">
-            <h2 className="text-2xl font-light text-slate-700 mb-8 tracking-[0.1em] flex items-center gap-3">
-              <User className="w-6 h-6 text-sky-500" />
-              マイページ
-            </h2>
-
+          <div className="bg-white p-8 rounded-xl shadow-sm border border-slate-200 animate-fade-in">
+            <h2 className="text-2xl font-light text-slate-700 mb-8 tracking-[0.1em] flex items-center gap-3"><User className="w-6 h-6 text-sky-500" />マイページ</h2>
             <div className="mb-10 bg-slate-50 p-6 rounded-lg border border-slate-200">
-              <h3 className="text-sm font-bold text-slate-600 mb-4 flex items-center gap-2">
-                <Save className="w-4 h-4" /> ユーザー名の設定
-              </h3>
+              <h3 className="text-sm font-bold text-slate-600 mb-4">ユーザー名の設定</h3>
               <form onSubmit={handleUpdateProfile} className="flex gap-3">
-                <input 
-                  type="text" 
-                  value={inputName} 
-                  onChange={(e) => setInputName(e.target.value)}
-                  placeholder="ゲストタイパー"
-                  maxLength={15}
-                  className="flex-1 px-4 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent text-slate-700"
-                />
-                <button type="submit" className="px-6 py-2 bg-slate-800 text-white font-medium rounded-md hover:bg-slate-700 transition-colors">
-                  保存
-                </button>
+                <input type="text" value={inputName} onChange={(e) => setInputName(e.target.value)} maxLength={15} className="flex-1 px-4 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-sky-500 outline-none" />
+                <button type="submit" className="px-6 py-2 bg-slate-800 text-white font-bold rounded-md hover:bg-slate-700">保存</button>
               </form>
-              <p className="text-xs text-slate-400 mt-2">※ この名前と記録は、今お使いのブラウザ（ローカル）にのみ保存されます。</p>
             </div>
-
-            <div>
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-sm font-bold text-slate-600 flex items-center gap-2">
-                  <History className="w-4 h-4" /> あなたのタイピング履歴
-                </h3>
-                {myRecords.length > 0 && (
-                  <button 
-                    onClick={clearRecords}
-                    className="text-xs flex items-center gap-1 text-rose-500 hover:text-rose-600 transition-colors font-medium px-2 py-1 rounded hover:bg-rose-50"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" /> 記録をすべて消去
-                  </button>
-                )}
-              </div>
-              
-              <div className="bg-slate-50 rounded-lg border border-slate-200 overflow-hidden max-h-[400px] overflow-y-auto">
-                <table className="w-full text-left text-sm">
-                  <thead className="bg-slate-100 text-slate-500 font-medium border-b border-slate-200 sticky top-0">
-                    <tr>
-                      <th className="py-3 px-4">日時</th>
-                      <th className="py-3 px-4">モード</th>
-                      <th className="py-3 px-4 text-right">WPM</th>
-                      <th className="py-3 px-4 text-right">正答率</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {myRecords.map(record => {
-                      const date = new Date(record.date);
-                      return (
-                        <tr key={record.id} className="border-b border-slate-100 last:border-0 hover:bg-white">
-                          <td className="py-3 px-4 text-slate-500 text-xs">
-                            {date.toLocaleDateString()} {date.getHours().toString().padStart(2, '0')}:{date.getMinutes().toString().padStart(2, '0')}
-                          </td>
-                          <td className="py-3 px-4 text-slate-600">
-                            {record.mode === 'english' ? '英字' : record.mode === 'romaji' ? 'ローマ字' : 'かな'}
-                          </td>
-                          <td className="py-3 px-4 text-right font-mono font-bold text-slate-700">{record.wpm}</td>
-                          <td className="py-3 px-4 text-right font-mono text-slate-500">{record.accuracy}%</td>
-                        </tr>
-                      );
-                    })}
-                    {myRecords.length === 0 && (
-                      <tr>
-                        <td colSpan="4" className="py-8 text-center text-slate-400">まだプレイ記録がありません。プレイして履歴を残しましょう！</td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
+            <div className="flex justify-between items-center mb-4"><h3 className="text-sm font-bold text-slate-600">履歴</h3>{myRecords.length > 0 && <button onClick={clearRecords} className="text-xs text-rose-500 font-bold hover:underline">全消去</button>}</div>
+            <div className="bg-slate-50 rounded-lg border border-slate-200 max-h-[300px] overflow-y-auto">
+              <table className="w-full text-sm text-left">
+                <thead className="bg-slate-100 text-slate-500 sticky top-0"><tr><th className="p-3">日時</th><th className="p-3">モード</th><th className="p-3 text-right">WPM</th></tr></thead>
+                <tbody>
+                  {myRecords.map(r => (
+                    <tr key={r.id} className="border-b border-slate-100 last:border-0 hover:bg-white"><td className="p-3 text-xs text-slate-500">{new Date(r.date).toLocaleString()}</td><td className="p-3">{r.mode==='english'?'英字':r.mode==='romaji'?'ローマ字':'かな'}</td><td className="p-3 text-right font-mono font-bold text-sky-700">{r.wpm}</td></tr>
+                  ))}
+                  {myRecords.length === 0 && <tr><td colSpan="3" className="p-8 text-center text-slate-400">記録がありません</td></tr>}
+                </tbody>
+              </table>
             </div>
-
           </div>
         )}
-
       </div>
 
       <footer className="w-full text-center py-6 mt-auto">
@@ -633,15 +429,9 @@ export default function App() {
       </footer>
       
       <style dangerouslySetInnerHTML={{__html: `
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in {
-          animation: fadeIn 0.4s ease-out forwards;
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
       `}} />
     </div>
   );
 }
-
