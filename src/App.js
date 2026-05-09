@@ -360,7 +360,7 @@ export default function App() {
                     <div key={idx} className="flex flex-col items-center">
                       {inputMode === 'kana' && <span className={`text-[12px] h-5 font-bold ${idx < charIndex ? 'text-slate-200' : 'text-slate-400'}`}>{t.displayChar !== ' ' ? t.displayChar : ''}</span>}
                       <span className={`text-3xl font-mono px-[2px] rounded transition-colors relative ${idx < charIndex ? 'text-slate-200' : idx === charIndex ? (isError ? 'bg-rose-100 text-rose-600' : 'bg-sky-100 text-sky-800') : 'text-slate-700'}`}>
-                        {t.key === ' ' ? '␣' : (inputMode === 'kana' ? (t.key === '\\' ? '¥ / \\' : t.key.toUpperCase()) : t.displayChar)}
+                        {t.key === ' ' ? '␣' : (inputMode === 'kana' ? (t.displayChar === 'ー' ? '¥ / -' : t.key.toUpperCase()) : t.displayChar)}
                         {idx === charIndex && <span className="absolute bottom-0 left-0 w-full h-[3px] bg-sky-500 animate-pulse" />}
                       </span>
                     </div>
