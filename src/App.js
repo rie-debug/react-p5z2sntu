@@ -104,8 +104,8 @@ const KANA_MAP = {
   'ま':{key:'j'}, 'み':{key:'n'}, 'む':{key:']'}, 'め':{key:'/'}, 'も':{key:'m'},
   'や':{key:'7'}, 'ゆ':{key:'8'}, 'よ':{key:'9'},
   'ら':{key:'o'}, 'り':{key:'l'}, 'る':{key:'.'}, 'れ':{key:';'}, 'ろ':{key:'\\'},
-  'わ':{key:'0'}, 'ん':{key:'y'}, 'ー':{key:'\\'}, '、':{key:','}, '。':{key:'.'}, '？':{key:'?'},
-  'を':{key:'0'},
+  'わ':{key:'0'}, 'ん':{key:'y'}, 'ー':{key:'\\', accept:['¥', '-']}, '、':{key:','}, '。':{key:'.'}, '？':{key:'?', requiresShift:true},
+  'を':{key:'0', requiresShift:true},
   'ぁ':{key:'#', requiresShift:true}, 'ぃ':{key:'E', requiresShift:true}, 'ぅ':{key:'$', requiresShift:true}, 'ぇ':{key:'%', requiresShift:true}, 'ぉ':{key:'&', requiresShift:true},
   'ゃ':{key:'\'', requiresShift:true}, 'ゅ':{key:'(', requiresShift:true}, 'ょ':{key:')', requiresShift:true}, 'っ':{key:'Z', requiresShift:true}
 };
@@ -123,7 +123,7 @@ const getFingerForChar = (char) => {
   if ('67yuhjnm^&'.includes(lowerChar)) return { name: '人差し指', hand: '右手', id: '右手・人差し指' };
   if ('8ik,.*<'.includes(lowerChar)) return { name: '中指', hand: '右手', id: '右手・中指' };
   if ('9ol.>( '.includes(lowerChar)) return { name: '薬指', hand: '右手', id: '右手・薬指' };
-  if ('0p;/-_=+[]{}\\|:\'"?!~'.includes(lowerChar)) return { name: '小指', hand: '右手', id: '右手・小指' };
+  if ('0p;/-_=+[]{}\\|:\'"?!~¥'.includes(lowerChar)) return { name: '小指', hand: '右手', id: '右手・小指' };
   return { name: '小指', hand: '右手', id: '右手・小指' };
 };
 
@@ -271,7 +271,10 @@ export default function App() {
       if (!hasStartedTyping) { setHasStartedTyping(true); setStartTime(Date.now()); }
       const target = targets[charIndex];
       if (!target) return;
-      if (e.key === target.key) {
+      
+      const isMatch = e.key === target.key || (target.accept && target.accept.includes(e.key));
+      
+      if (isMatch) {
         setIsError(false);
         setCorrectCount(c => c + 1);
         if (charIndex + 1 === targets.length) {
@@ -357,7 +360,7 @@ export default function App() {
                     <div key={idx} className="flex flex-col items-center">
                       {inputMode === 'kana' && <span className={`text-[12px] h-5 font-bold ${idx < charIndex ? 'text-slate-200' : 'text-slate-400'}`}>{t.displayChar !== ' ' ? t.displayChar : ''}</span>}
                       <span className={`text-3xl font-mono px-[2px] rounded transition-colors relative ${idx < charIndex ? 'text-slate-200' : idx === charIndex ? (isError ? 'bg-rose-100 text-rose-600' : 'bg-sky-100 text-sky-800') : 'text-slate-700'}`}>
-                        {t.key === ' ' ? '␣' : (inputMode === 'kana' ? t.key.toUpperCase() : t.displayChar)}
+                        {t.key === ' ' ? '␣' : (inputMode === 'kana' ? (t.key === '\\' ? '¥ / \\' : t.key.toUpperCase()) : t.displayChar)}
                         {idx === charIndex && <span className="absolute bottom-0 left-0 w-full h-[3px] bg-sky-500 animate-pulse" />}
                       </span>
                     </div>
