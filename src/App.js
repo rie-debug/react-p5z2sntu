@@ -103,8 +103,8 @@ const KANA_MAP = {
   'は':{key:'f'}, 'ひ':{key:'v'}, 'ふ':{key:'2'}, 'へ':{key:'^'}, 'ほ':{key:'-'},
   'ま':{key:'j'}, 'み':{key:'n'}, 'む':{key:']'}, 'め':{key:'/'}, 'も':{key:'m'},
   'や':{key:'7'}, 'ゆ':{key:'8'}, 'よ':{key:'9'},
-  'ら':{key:'o'}, 'り':{key:'l'}, 'る':{key:'.'}, 'れ':{key:';'}, 'ろ':{key:'\\'},
-  'わ':{key:'0'}, 'ん':{key:'y'}, 'ー':{key:'\\', accept:['¥', '-']}, '、':{key:','}, '。':{key:'.'}, '？':{key:'?', requiresShift:true},
+  'ら':{key:'o'}, 'り':{key:'l'}, 'る':{key:'.'}, 'れ':{key:';'}, 'ろ':{key:'\\', accept:['_', '¥', '|']},
+  'わ':{key:'0'}, 'ん':{key:'y'}, 'ー':{key:'\\', accept:['¥', '-', '_', '|']}, '、':{key:','}, '。':{key:'.'}, '？':{key:'?', requiresShift:true},
   'を':{key:'0', requiresShift:true},
   'ぁ':{key:'#', requiresShift:true}, 'ぃ':{key:'E', requiresShift:true}, 'ぅ':{key:'$', requiresShift:true}, 'ぇ':{key:'%', requiresShift:true}, 'ぉ':{key:'&', requiresShift:true},
   'ゃ':{key:'\'', requiresShift:true}, 'ゅ':{key:'(', requiresShift:true}, 'ょ':{key:')', requiresShift:true}, 'っ':{key:'Z', requiresShift:true}
